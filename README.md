@@ -73,6 +73,7 @@ classDiagram
     class Produto {
         - String nome
         - double preco
+        - double quantidade
         - String descricao
     }
 
