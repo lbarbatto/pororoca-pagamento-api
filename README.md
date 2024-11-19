@@ -5,130 +5,88 @@
 ```mermaid
 
 classDiagram
-    %% Classes principais
-    class Usuario {
-        <<abstract>>
-        - Long id
-        - String nome
-        - String email
-        - String phone
-        - String senha
-        + criarConta()
-        + editarConta()
-        + excluirConta()
+    Abstract class Usuario {
+        +int id
+        +String nome
+        +String email
+        +String senha
+        +criarConta()
+        +editarConta()
+        +excluirConta()
     }
-    
+
     class Comprador {
-        - Carrinho carrinho
-        + adicionarAoCarrinho(Produto produto)
-        + removerDoCarrinho(Produto produto)
-        + efetuarPagamento(Pagamento pagamento)
-        + gerarQRCodeDinamico(): String
+        +adicionarProdutoCarrinho()
+        +removerProdutoCarrinho()
+        +efetuarPagamento()
+        +gerarTokenQRCode()
     }
 
     class Lojista {
-        - List~Produto~ produtos
-        - List~Vendedor~ vendedores
-        - boolean conviteAceito
-        + criarLoja(PaginaLoja loja)
-        + editarLoja(PaginaLoja loja)
-        + excluirLoja()
-        + convidarVendedor(Vendedor vendedor)
-        + gerarRelatorioVendas(): Relatorio
-        + solicitarTransferencia(Valor valor)
+        +criarLoja()
+        +editarLoja()
+        +excluirLoja()
+        +gerenciarProdutos()
+        +convidarVendedores()
+        +visualizarRelatorioVendas()
     }
 
     class Vendedor {
-        - PaginaLoja loja
-        + validarEntrega(QRCode qrcode): boolean
-        + consultarSaldo(): double
+        +validarQRCode()
+        +consultarSaldoEntregas()
     }
 
     class Gerente {
-        - List~PaginaEvento~ eventos
-        + criarEvento(PaginaEvento evento)
-        + editarEvento(PaginaEvento evento)
-        + excluirEvento(PaginaEvento evento)
-        + convidarLojista(Lojista lojista)
-        + bloquearLojista(Lojista lojista)
-        + autorizarTransferencia(Valor valor)
-        + gerarRelatorios(): List~Relatorio~
+        +criarPaginaEvento()
+        +convidarLojistas()
+        +bloquearLojistas()
+        +visualizarRelatorioVendasGerais()
+        +autorizarTransferenciaValores()
     }
 
     class Administrador {
-        + acessarLogsSistema()
-        + visualizarLogsSeguranca()
-        + gerarRelatoriosDetalhados(): Relatorio
+        +gestaoSistema()
+        +visualizarLogsSistema()
+        +visualizarLogsSeguranca()
+        +gerarRelatoriosErros()
     }
 
-    %% Classes auxiliares
-    class PaginaLoja {
-        - String nome
-        - String descricao
-        - Lojista proprietario
-        - List~Produto~ produtos
-        + editarPagina(String nome, String descricao)
+    class Loja {
+        +int id
+        +String nome
+        +String descricao
+        +adicionarProduto()
+        +removerProduto()
+        +visualizarRelatorioVendas()
     }
 
     class Produto {
-        - String nome
-        - double preco
-        - double quantidade
-        - String descricao
-    }
-
-    class Carrinho {
-        - List~Produto~ produtos
-        + adicionarProduto(Produto produto)
-        + removerProduto(Produto produto)
-        + calcularTotal(): double
-    }
-
-    class PaginaEvento {
-        - String nome
-        - String descricao
-        - Gerente responsavel
-        - List~PaginaLoja~ lojas
-        + listarLojas()
+        +int id
+        +String nome
+        +double preco
+        +int quantidade
+        +atualizarEstoque()
     }
 
     class Pagamento {
-        - double valor
-        - String metodoPagamento
-        + processar(): boolean
+        +String idPagamento
+        +double valor
+        +String status
+        +gerarQRCode()
+        +validarPagamento()
     }
 
-    class QRCode {
-        - String codigo
-        + validarCodigo(): boolean
-    }
-
-    class Relatorio {
-        - String tipo
-        - Date dataGeracao
-        + gerarRelatorio()
-    }
-
-    %% Relações entre as classes
+    %% Relacionamentos
     Usuario <|-- Comprador
     Usuario <|-- Lojista
     Usuario <|-- Vendedor
     Usuario <|-- Gerente
     Usuario <|-- Administrador
-
-    Lojista "1" o-- "1" PaginaLoja
-    Lojista "1" o-- "*" Produto
-    Lojista "1" o-- "*" Vendedor
-
-    Gerente "1" o-- "*" PaginaEvento
-    PaginaEvento "1" o-- "*" PaginaLoja
-
-    Comprador "1" o-- "1" Carrinho
-    Carrinho "1" o-- "*" Produto
-    Comprador "1" --> "1" QRCode
-
-    Pagamento "1" --> "1" Comprador
-    Relatorio "*" --> "1" Usuario
+    Lojista "1" *-- "n" Loja
+    Loja "1" *-- "n" Produto
+    Comprador "1" *-- "n" Pagamento
+    Lojista "1" *-- "n" Vendedor
+    Pagamento "1" *-- "1" Loja
 ```
 ### Fluxograma
 Representa processos e fluxos de trabalho. Pode ser usado para ilustrar:
