@@ -5,88 +5,107 @@
 ```mermaid
 
 classDiagram
-    Abstract class Usuario {
-        +int id
-        +String nome
-        +String email
-        +String senha
-        +criarConta()
-        +editarConta()
-        +excluirConta()
+    class Usuario {
+        <<abstract>>
+        + Long id
+        + String nome
+        + String email
+        + String senha
+        + LocalDateTime dataCriacao
+        + void login()
+        + void logout()
     }
 
     class Comprador {
-        +adicionarProdutoCarrinho()
-        +removerProdutoCarrinho()
-        +efetuarPagamento()
-        +gerarTokenQRCode()
+        + void criarConta()
+        + void editarConta()
+        + void excluirConta()
+        + Carrinho carrinho
+        + void adicionarProduto(Produto produto)
+        + void removerProduto(Produto produto)
+        + QRCode realizarPagamento(APIExterna api, Carrinho carrinho)
     }
 
     class Lojista {
-        +criarLoja()
-        +editarLoja()
-        +excluirLoja()
-        +gerenciarProdutos()
-        +convidarVendedores()
-        +visualizarRelatorioVendas()
+        + void criarConta(String convite)
+        + void editarConta()
+        + void excluirConta()
+        + Loja loja
+        + void convidarVendedor(String email)
+        + void editarLoja()
+        + void excluirProduto(Produto produto)
+        + void verRelatorios()
+        + void solicitarTransferencia()
     }
 
     class Vendedor {
-        +validarQRCode()
-        +consultarSaldoEntregas()
+        + void criarConta(String convite)
+        + void editarConta()
+        + void excluirConta()
+        + Loja loja
+        + void validarQRCode(QRCode qrcode)
+        + double consultarSaldoEntregas()
     }
 
     class Gerente {
-        +criarPaginaEvento()
-        +convidarLojistas()
-        +bloquearLojistas()
-        +visualizarRelatorioVendasGerais()
-        +autorizarTransferenciaValores()
+        + void criarConta()
+        + void editarConta()
+        + void excluirConta()
+        + void criarPaginaEvento()
+        + void convidarLojista(String email)
+        + void bloquearLojista()
+        + void verRelatoriosGerais()
+        + void autorizarTransferencia()
     }
 
     class Administrador {
-        +gestaoSistema()
-        +visualizarLogsSistema()
-        +visualizarLogsSeguranca()
-        +gerarRelatoriosErros()
+        + void acessarManutencaoSistema()
+        + void verRelatoriosDetalhados()
+        + void verLogsSistema()
+        + void gerarRelatoriosErros()
+    }
+
+    class Carrinho {
+        + List~Produto~ produtos
+        + void adicionarProduto(Produto produto)
+        + void removerProduto(Produto produto)
+        + double calcularTotal()
     }
 
     class Loja {
-        +int id
-        +String nome
-        +String descricao
-        +adicionarProduto()
-        +removerProduto()
-        +visualizarRelatorioVendas()
+        + String nome
+        + String descricao
+        + List~Produto~ produtos
+        + void adicionarProduto(Produto produto)
+        + void editarProduto(Produto produto)
+        + void excluirProduto(Produto produto)
     }
 
     class Produto {
-        +int id
-        +String nome
-        +double preco
-        +int quantidade
-        +atualizarEstoque()
+        + Long id
+        + String nome
+        + String descricao
+        + double preco
+        + int quantidadeEstoque
     }
 
-    class Pagamento {
-        +String idPagamento
-        +double valor
-        +String status
-        +gerarQRCode()
-        +validarPagamento()
+    class APIExterna {
+        <<interface>>
+        + QRCode processarPagamento(Carrinho carrinho, Comprador comprador)
     }
 
-    %% Relacionamentos
     Usuario <|-- Comprador
     Usuario <|-- Lojista
     Usuario <|-- Vendedor
     Usuario <|-- Gerente
     Usuario <|-- Administrador
-    Lojista "1" *-- "n" Loja
-    Loja "1" *-- "n" Produto
-    Comprador "1" *-- "n" Pagamento
-    Lojista "1" *-- "n" Vendedor
-    Pagamento "1" *-- "1" Loja
+    Lojista "1" --> "1" Loja
+    Vendedor "1" --> "1" Loja
+    Comprador "1" --> "1" Carrinho
+    Carrinho "1" --> "*" Produto
+    Loja "1" --> "*" Produto
+    Comprador "1" --> "1" APIExterna
+
 ```
 ### Fluxograma
 Representa processos e fluxos de trabalho. Pode ser usado para ilustrar:
