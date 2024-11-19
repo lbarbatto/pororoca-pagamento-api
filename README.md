@@ -11,6 +11,7 @@ classDiagram
         - Long id
         - String nome
         - String email
+        - String phone
         - String senha
         + criarConta()
         + editarConta()
