@@ -14,12 +14,12 @@ classDiagram
         + LocalDateTime dataCriacao
         + void login()
         + void logout()
-    }
-
-    class Comprador {
         + void criarConta()
         + void editarConta()
         + void excluirConta()
+    }
+
+    class Comprador {
         + Carrinho carrinho
         + void adicionarProduto(Produto produto)
         + void removerProduto(Produto produto)
@@ -28,29 +28,25 @@ classDiagram
 
     class Lojista {
         + void criarConta(String convite)
-        + void editarConta()
-        + void excluirConta()
         + Loja loja
         + void convidarVendedor(String email)
+        + void criarLoja
         + void editarLoja()
+        + void adicionarProduto(Produto produto)
         + void excluirProduto(Produto produto)
         + void verRelatorios()
+        + BigDecima pegarSaldo()
         + void solicitarTransferencia()
     }
 
     class Vendedor {
         + void criarConta(String convite)
-        + void editarConta()
-        + void excluirConta()
         + Loja loja
         + void validarQRCode(QRCode qrcode)
         + double consultarSaldoEntregas()
     }
 
     class Gerente {
-        + void criarConta()
-        + void editarConta()
-        + void excluirConta()
         + void criarPaginaEvento()
         + void convidarLojista(String email)
         + void bloquearLojista()
