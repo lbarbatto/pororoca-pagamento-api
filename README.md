@@ -5,102 +5,78 @@
 ```mermaid
 
 classDiagram
-    class Usuario {
-        <<abstract>>
-        + Long id
-        + String nome
-        + String email
-        + String senha
-        + LocalDateTime dataCriacao
-        + void login()
-        + void logout()
-        + void criarConta()
-        + void editarConta()
-        + void excluirConta()
+    class User {
+        +Long id
+        +String name
+        +String email
+        +String phone
+        +String password
     }
 
-    class Comprador {
-        + Carrinho carrinho
-        + void adicionarProduto(Produto produto)
-        + void removerProduto(Produto produto)
-        + QRCode realizarPagamento(APIExterna api, Carrinho carrinho)
+    class Client {
+        +ClientType clientType
+        +Cart cart
     }
 
-    class Lojista {
-        + void criarConta(String convite)
-        + Loja loja
-        + void convidarVendedor(String email)
-        + void criarLoja
-        + void editarLoja()
-        + void adicionarProduto(Produto produto)
-        + void excluirProduto(Produto produto)
-        + void verRelatorios()
-        + BigDecima pegarSaldo()
-        + void solicitarTransferencia()
+    class Seller {
+        +Store store
     }
 
-    class Vendedor {
-        + void criarConta(String convite)
-        + Loja loja
-        + void validarQRCode(QRCode qrcode)
-        + double consultarSaldoEntregas()
+    class Admin {
+        +AdminType adminType
     }
 
-    class Gerente {
-        + void criarPaginaEvento()
-        + void convidarLojista(String email)
-        + void bloquearLojista()
-        + void verRelatoriosGerais()
-        + void autorizarTransferencia()
+    class Cart {
+        +List<Product> products
+        +DiscountStrategy discountStrategy
+        +double total
     }
 
-    class Administrador {
-        + void acessarManutencaoSistema()
-        + void verRelatoriosDetalhados()
-        + void verLogsSistema()
-        + void gerarRelatoriosErros()
+    class Product {
+        +Long id
+        +String name
+        +double price
+        +int quantity
     }
 
-    class Carrinho {
-        + List~Produto~ produtos
-        + void adicionarProduto(Produto produto)
-        + void removerProduto(Produto produto)
-        + double calcularTotal()
+    class PaymentService {
+        +String processPayment(Cart cart, Client client)
     }
 
-    class Loja {
-        + String nome
-        + String descricao
-        + List~Produto~ produtos
-        + void adicionarProduto(Produto produto)
-        + void editarProduto(Produto produto)
-        + void excluirProduto(Produto produto)
+    class DiscountService {
+        +void applyDiscount(Cart cart, DiscountStrategy discountStrategy)
+        +DiscountStrategy getDiscountStrategy(String type, double value)
     }
 
-    class Produto {
-        + Long id
-        + String nome
-        + String descricao
-        + double preco
-        + int quantidadeEstoque
+    class PermissionService {
+        +void grantDefaultPermissions(Admin admin)
+    }
+
+    class NotificationService {
+        +void sendLoginNotification(Admin admin)
+        +void sendLogoutNotification(Admin admin)
+    }
+
+    class CartService {
+        +void addProductToCart(Cart cart, Product product, int quantity)
     }
 
     class APIExterna {
-        <<interface>>
-        + QRCode processarPagamento(Carrinho carrinho, Comprador comprador)
+        +String makePayment(Cart cart, Client client)
     }
 
-    Usuario <|-- Comprador
-    Usuario <|-- Lojista
-    Usuario <|-- Vendedor
-    Usuario <|-- Gerente
-    Usuario <|-- Administrador
-    Lojista "1" --> "1" Loja
-    Vendedor "1" --> "1" Loja
-    Comprador "1" --> "1" Carrinho
-    Carrinho "1" --> "*" Produto
-    Loja "1" --> "*" Produto
-    Comprador "1" --> "1" APIExterna
+    User <|-- Client
+    User <|-- Seller
+    User <|-- Admin
+    Client "1" *-- "1" Cart
+    Cart "1" *-- "*" Product
+    Cart "1" *-- "1" DiscountStrategy
+    CartService "1" *-- "*" Product
+    PermissionService "1" *-- "1" Admin
+    PaymentService "1" *-- "*" Cart
+    NotificationService "1" *-- "*" Admin
+    APIExterna "1" *-- "*" Cart
+
 
 ```
 ### Fluxograma
@@ -273,11 +249,71 @@ gitGraph
    commit id: "i1" tag: "Ongoing feature work"
 
 ```
+### Diagrama Relacional
+Ótimo para compreender o fluxo das relações entre as entidades do sistema.
 
 ```mermaid
 
+erDiagram
+    CLIENT {
+        Long id PK
+        String name
+        String email
+        String phone
+        String password
+    }
 
+    SELLER {
+        Long id PK
+        String name
+        String email
+        String phone
+        String password
+        Long store_id FK
+    }
 
+    ADMIN {
+        Long id PK
+        String name
+        String email
+        String phone
+        String password
+    }
+
+    CART {
+        Long id PK
+        Long client_id FK
+        Double total
+    }
+
+    PRODUCT {
+        Long id PK
+        String name
+        Double price
+        Integer quantity
+    }
+
+    DISCOUNT {
+        Long id PK
+        String type
+        Double value
+    }
+
+    STORE {
+        Long id PK
+        String name
+        Long owner_id FK
+    }
+
+    CLIENT ||--o| CART : "has"
+    CART ||--o| PRODUCT : "contains"
+    SELLER ||--|{ STORE : "manages"
+    CART ||--|{ DISCOUNT : "applies"
+    ADMIN ||--|{ CLIENT : "manages"
+
+```
+
+```mermaid
 
 ```
 
