@@ -5,78 +5,167 @@
 ```mermaid
 
 classDiagram
-    class User {
-        +Long id
-        +String name
-        +String email
-        +String phone
-        +String password
-    }
-
-    class Client {
-        +ClientType clientType
-        +Cart cart
-    }
-
-    class Seller {
-        +Store store
-    }
-
-    class Admin {
-        +AdminType adminType
-    }
-
-    class Cart {
-        +List<Product> products
-        +DiscountStrategy discountStrategy
-        +double total
-    }
-
-    class Product {
-        +Long id
-        +String name
-        +double price
-        +int quantity
-    }
-
-    class PaymentService {
-        +String processPayment(Cart cart, Client client)
-    }
-
-    class DiscountService {
-        +void applyDiscount(Cart cart, DiscountStrategy discountStrategy)
-        +DiscountStrategy getDiscountStrategy(String type, double value)
-    }
-
-    class PermissionService {
-        +void grantDefaultPermissions(Admin admin)
-    }
-
-    class NotificationService {
-        +void sendLoginNotification(Admin admin)
-        +void sendLogoutNotification(Admin admin)
-    }
-
-    class CartService {
-        +void addProductToCart(Cart cart, Product product, int quantity)
-    }
-
-    class APIExterna {
-        +String makePayment(Cart cart, Client client)
-    }
-
+    direction TB
+    
+    %% Superclass and Generalization
     User <|-- Client
     User <|-- Seller
     User <|-- Admin
-    Client "1" *-- "1" Cart
-    Cart "1" *-- "*" Product
-    Cart "1" *-- "1" DiscountStrategy
-    CartService "1" *-- "*" Product
-    PermissionService "1" *-- "1" Admin
-    PaymentService "1" *-- "*" Cart
-    NotificationService "1" *-- "*" Admin
-    APIExterna "1" *-- "*" Cart
+    User <|-- Owner
+    User <|-- Manager
+    
+    %% Manager and Event
+    Manager "1" *-- "1" Event : manages
 
+    %% Owner and Store
+    Owner "1" *-- "1" Store : owns
+
+    %% Store and Product
+    Store "1" *-- "*" Product : contains
+
+    %% Client, Cart, and Product
+    Client "1" *-- "1" Cart : has
+    Cart "1" *-- "*" Product : contains
+    Cart "1" *-- "1" DiscountStrategy : applies
+
+    %% CartService and its relationship
+    CartService "1" *-- "*" Product : manages
+
+    %% DiscountStrategy implementations
+    DiscountStrategy <|-- FixedAmountDiscount
+    DiscountStrategy <|-- PercentageDiscount
+
+    %% PermissionService for Admins
+    PermissionService "1" *-- "1" Admin : managesPermissions
+
+    %% PaymentService, Cart, and Client
+    PaymentService "1" *-- "*" Cart : processes
+    PaymentService "1" *-- "1" Client : processesFor
+
+    %% NotificationService for Admins
+    NotificationService "1" *-- "*" Admin : notifies
+
+    %% APIExterna and PaymentService
+    APIExterna "1" --> "1" PaymentService : usedBy
+
+    %% Classes definitions for attributes and methods
+    class User {
+        - Long id
+        - String name
+        - String email
+        - String phone
+        - String password
+        + getId()
+        + getName()
+        + setEmail()
+        + setPassword()
+    }
+    
+    class Client {
+        - Cart cart
+        + getCart()
+        + makePurchase()
+    }
+    
+    class Seller {
+        - Store store
+        + getStore()
+        + listProducts()
+    }
+    
+    class Admin {
+        - AdminType adminType
+        + updatePermissions()
+        + manageSystem()
+    }
+    
+    class Owner {
+        - Store store
+        + createStore()
+        + manageStore()
+    }
+    
+    class Manager {
+        - ManagerType managerType
+        - List~Store~ stores
+        + getStores()
+        + manageEvent()
+    }
+    
+    class Event {
+        - Long id
+        - String name
+        - Date date
+        - Location location
+        + getDetails()
+    }
+    
+    class Store {
+        - Long id
+        - String name
+        - Location location
+        - List~Product~ products
+        + addProduct()
+        + removeProduct()
+    }
+    
+    class Product {
+        - Long id
+        - String name
+        - Double price
+        - int stockQuantity
+        + updateStock()
+        + getDetails()
+    }
+    
+    class Cart {
+        - Long id
+        - List~Product~ products
+        - DiscountStrategy discountStrategy
+        + calculateTotal()
+        + applyDiscount()
+        + addProduct()
+        + removeProduct()
+    }
+    
+    class CartService {
+        + addProductToCart()
+        + removeProductFromCart()
+        + clearCart()
+    }
+    
+    class DiscountStrategy {
+        + calculateDiscount(cartTotal: Double): Double
+    }
+    
+    class FixedAmountDiscount {
+        - double discountValue
+        + calculateDiscount(cartTotal: Double): Double
+    }
+    
+    class PercentageDiscount {
+        - double percentage
+        + calculateDiscount(cartTotal: Double): Double
+    }
+    
+    class PermissionService {
+        + grantPermissions()
+        + revokePermissions()
+        + updatePermissions()
+    }
+    
+    class PaymentService {
+        + processPayment(cart: Cart, client: Client): String
+    }
+    
+    class NotificationService {
+        + sendLoginNotification(admin: Admin)
+        + sendLogoutNotification(admin: Admin)
+    }
+    
+    class APIExterna {
+        + makePayment(cart: Cart, client: Client): String
+    }
 
 ```
 ### Fluxograma
