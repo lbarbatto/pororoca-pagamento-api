@@ -248,8 +248,31 @@ graph TB
     end
 
 ```
-### Diagrama de Gantt
-Ótimo para planejamento e acompanhamento do desenvolvimento do sistema. Pode ser usado para representar o cronograma do projeto.
+### GitFlow
+Ótimo para planejamento e acompanhamento do desenvolvimento das funcionalidades e versões do sistema.
+
+```mermaid
+gitGraph
+   commit id: "a1" tag: "Start"
+   branch develop
+   commit id: "b1" tag: "Initial develop"
+   branch feature/user-service
+   checkout feature/user-service
+   commit id: "c1" tag: "User service created"
+   checkout develop
+   merge feature/user-service id: "d1" tag: "Merge: User Service"
+   branch feature/payment-service
+   checkout feature/payment-service
+   commit id: "e1" tag: "Payment service in progress"
+   checkout develop
+   merge feature/payment-service id: "f1" tag: "Merge: Payment Service"
+   checkout main
+   merge develop id: "g1" tag: "Release v1.0" type: HIGHLIGHT
+   commit id: "h1" tag: "Hotfix applied"
+   checkout develop
+   commit id: "i1" tag: "Ongoing feature work"
+
+```
 
 ```mermaid
 
